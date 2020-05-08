@@ -1,14 +1,35 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+} from 'react-native';
 import colors from './Colors';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import tempData from './tempData';
 import TodoList from './components/TodoList';
-
+import AddListModal from './components/AddListModal';
 export default class App extends React.Component {
+  state = {
+    addTodoVisible: false,
+  };
+
+  toggleAddTodoModal() {
+    this.setState({addTodoVisible: !this.state.addTodoVisible});
+  }
   render() {
     return (
       <View style={styles.container}>
+        <Modal
+          animationType="slide"
+          visible={this.state.addTodoVisible}
+          onRequestClose={() => this.toggleAddTodoModal()}>
+          <AddListModal closeModal={() => this.toggleAddTodoModal} />
+        </Modal>
+
         <View style={{flexDirection: 'row'}}>
           <View style={styles.divider} />
           <Text style={styles.title}>
@@ -19,8 +40,10 @@ export default class App extends React.Component {
         </View>
 
         <View style={{marginVertical: 48}}>
-          <TouchableOpacity style={styles.addList}>
-            <Icon name="plus" size={16} color={colors.blue} />
+          <TouchableOpacity
+            style={styles.addList}
+            onPress={() => this.toggleAddTodoModal()}>
+            <AntDesign name="plus" size={20} color={colors.blue} />
           </TouchableOpacity>
 
           <Text style={styles.add}>Add List</Text>
