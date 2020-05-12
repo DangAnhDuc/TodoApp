@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+/* eslint-disable prettier/prettier */
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -6,17 +7,36 @@ import {
   TouchableOpacity,
   FlatList,
   Modal,
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import colors from './Colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import tempData from './tempData';
 import TodoList from './components/TodoList';
 import AddListModal from './components/AddListModal';
+import Fire from './Fire';
+
 export default class App extends React.Component {
   state = {
     addTodoVisible: false,
-    lists: tempData,
+    lists: [],
+    user: {},
+    loading: true,
   };
+ 
+  componentDidMount() {
+    const firebase = new Fire((error, user) => {
+      if (error) {
+        return Alert.alert('Something went wrong!');
+      }
+      firebase.getLists((lists) => {
+        this.setState({lists, user}, () => {this.setState({loading: false});});
+      });
+
+      this.setState({user});
+    });
+  }
 
   toggleAddTodoModal() {
     this.setState({addTodoVisible: !this.state.addTodoVisible});
@@ -44,6 +64,13 @@ export default class App extends React.Component {
   };
 
   render() {
+    if(this.state.loading){
+      return(
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color={colors.blue}/>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <Modal
@@ -55,6 +82,10 @@ export default class App extends React.Component {
             addList={this.addList}
           />
         </Modal>
+
+        <View>
+          <Text>User: {this.state.user.uid}</Text>
+        </View>
 
         <View style={{flexDirection: 'row'}}>
           <View style={styles.divider} />
@@ -78,7 +109,7 @@ export default class App extends React.Component {
         <View style={{height: 275, paddingLeft: 32}}>
           <FlatList
             data={this.state.lists}
-            keyExtractor={(item) => item.name}
+            keyExtractor={(item) => item.id.toString()}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             renderItem={({item}) => this.renderList(item)}

@@ -9,7 +9,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   TextInput,
-  Keyboard
+  Keyboard,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -94,7 +94,7 @@ export default class TodoModal extends Component {
             <FlatList
               data={list.todos}
               renderItem={({item, index}) => this.renderTodo(item, index)}
-              keyExtractor={(item) => item.title}
+              keyExtractor={(_,index) => index.toString()}
               contentContainerStyle={{
                 paddingHorizontal: 32,
                 paddingVertical: 64,
